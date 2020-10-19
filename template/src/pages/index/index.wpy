@@ -1,0 +1,67 @@
+<style lang="less">
+.index {
+  width: 100%;
+  height: 100%;
+  padding: 0 32rpx;
+}
+</style>
+
+<template>
+  <div class="index">
+    <div>这是首页</div>
+    <button
+      @tap="toLogin()"
+      v-if="!isLogin"
+    >登录</button>
+  </div>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import API from '@/api/api'
+import { mapState } from '@wepy/x'
+import store from '@/store'
+import certificate from '@/utils/certificate'
+wepy.page({
+  store,
+  data: {
+    isLogin: false,
+    indexData: {}
+  },
+  computed: {
+    ...mapState([ 'patientInfo' ])
+  },
+  methods: {
+    toLogin () {
+      certificate.showLoginDialog()
+    },
+    async getIndexInfo () {
+      const res = await API.getIndexInfo()
+      if (res.success) {
+        this.indexData = res.data
+      }
+    }
+  },
+  async onLoad (options) {
+    if (options.token) {
+      wx.setStorageSync('token', options.token)
+    }
+    this.isLogin = !!wx.getStorageSync('token')
+    if (this.isLogin) {
+      // 获取首页信息
+      this.getIndexInfo()
+      // 获取用户信息
+      store.dispatch('getPatientInfo')
+      return false
+    }
+  }
+})
+</script>
+
+<config>
+{
+  "navigationBarBackgroundColor": "#fff",
+  "usingComponents": {
+  }
+}
+</config>

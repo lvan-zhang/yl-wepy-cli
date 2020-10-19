@@ -1,0 +1,167 @@
+<template>
+  <div class="image-block">
+    <div class="image" v-for="(item, index) in imageList" :key="item.imageCode">
+      <image :src="item.path || item.imageUrl" class="image__main"></image>
+      <div class="image__close" @click="remove(index)">
+        <van-icon name="cross" size="20rpx" color="#fff" custom-style="position: absolute; bottom: 8rpx;left: 8rpx;" />
+      </div>
+      <div class="image__mask" v-show="item.status === 'pending' || item.status === 'failed'">
+        <van-loading color="#fff" size="30rpx;" v-show="item.status === 'pending'" />
+        <div class="tip" v-show="item.status === 'failed'">上传失败</div>
+      </div>
+    </div>
+    <div class="image-upload" @click="chooseImageAndUpload" v-show="maxCount > imageList.length ">
+      <van-icon name="plus" color="#c5c5c5" size="50rpx" />
+    </div>
+    <div class="image-placeholder">
+      {{placeholder}}
+    </div>
+  </div>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import apiCommon from '@/api/common'
+
+wepy.component({
+  props: {
+    maxCount: {
+      type: Number,
+      default: 6
+    },
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    list: {
+      type: Array,
+      default: () => []
+    },
+    imageType: {
+      type: String,
+      default: ''
+    }
+  },
+  data: {
+    imageList: []
+  },
+  watch: {
+    list(newValue, oldValue) {
+      this.imageList = [...this.imageList, ...newValue]
+    }
+  },
+  methods: {
+    remove(index) {
+      this.imageList.splice(index, 1)
+    },
+    chooseImageAndUpload() {
+      const count = this.maxCount - this.imageList.length
+      wx.chooseImage({
+        count: count,
+        success: res => {
+          const imagePathList = res.tempFilePaths
+          this.uploadImages(imagePathList)
+        }, // 返回图片的本地文件路径列表 tempFilePaths,
+        fail: () => {}
+      })
+    },
+    uploadImages(imagePathList) {
+      const currentImageLen = this.imageList.length
+      for (let i = 0, len = imagePathList.length; i < len; i++) {
+        let item = {
+          status: 'pending',
+          path: imagePathList[i]
+        }
+        this.imageList.push(item)
+        console.log(imagePathList[i])
+        apiCommon
+          .uploadImage(imagePathList[i], { imageType: this.imageType })
+          .then(res => {
+            if (res.success) {
+              this.imageList[currentImageLen + i].status = 'success'
+              this.imageList[currentImageLen + i].imageCode =
+                res.data[0].imageCode
+              this.imageList[currentImageLen + i].imageUrl =
+                res.data[0].imageUrl
+            } else {
+              this.imageList[currentImageLen + i].status = 'failed'
+            }
+          })
+      }
+    }
+  }
+})
+</script>
+
+<style lang="less" scoped>
+.image-block {
+  padding: 20rpx 0 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+.image-placeholder {
+  height: 140rpx;
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #666666;
+}
+.image-upload {
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+  width: 140rpx;
+  height: 140rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f2f2;
+}
+.image {
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+  width: 140rpx;
+  height: 140rpx;
+  position: relative;
+  overflow: hidden;
+  &__main {
+    width: 100%;
+    height: 100%;
+  }
+  &__mask {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column-reverse;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  &__close {
+    position: absolute;
+    right: -32rpx;
+    top: -32rpx;
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+  }
+  .tip {
+    color: #fff;
+    font-size: 20rpx;
+  }
+}
+</style>
+
+
+<config>
+{
+  "usingComponents": {
+    "van-icon": "~@/components/vant/icon",
+    "van-loading": "~@/components/vant/loading",
+  }
+}
+</config>

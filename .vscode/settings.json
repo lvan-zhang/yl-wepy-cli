@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.run": "onSave",
+  // #每次保存的时候将代码按eslint格式进行修复，要在保存时运行的代码操作类型。保存时按照哪个规则进行格式化
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.stylelint": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

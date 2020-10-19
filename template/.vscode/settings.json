@@ -1,0 +1,25 @@
+{
+  // 修改编辑器默认格式化方案，也就是右键format Document width里面的默认
+  "editor.defaultFormatter": "hu2ren.vetur-wepy",
+  "vetur.validation.script": false,
+  "vetur.validation.interpolation": false,
+  "vetur.validation.template": false,
+  "vetur.format.defaultFormatter.js": "none",
+  "vetur.format.defaultFormatter.html": "js-beautify-html",
+  "editor.formatOnSave": true,
+  "eslint.run": "onSave",
+  "eslint.validate": [
+    "vue"
+  ],
+  // #每次保存的时候将代码按eslint格式进行修复，要在保存时运行的代码操作类型。保存时按照哪个规则进行格式化
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.stylelint": true
+  },
+  "px-to-rpx.baseWidth": 375,
+  "px-to-rpx.fixedDigits": 1,
+  "px-to-rpx.autoRemovePrefixZero": false,
+  "[vue]": {
+    "editor.defaultFormatter": "hu2ren.vetur-wepy"
+  }
+}

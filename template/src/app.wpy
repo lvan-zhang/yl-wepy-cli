@@ -1,0 +1,125 @@
+<style lang="less">
+@import './style/reset.less';
+@import './style/theme.less';
+.van-radio {
+  align-items: flex-start !important;
+}
+</style>
+
+<script>
+var gio = require('./utils/gio-minp/index.js').default
+var gioConfig = require('./config/gioConfig.js').default
+gio('setConfig', gioConfig)
+import wepy from '@wepy/core'
+import vuex from '@wepy/x'
+
+wepy.use(vuex)
+
+wepy.app({
+  globalData: {},
+
+  onLaunch() {
+    console.log('这是目前的环境（mcp/mcptest）', __BASE_URL__)
+    // 获取本地存储的baseUrl
+    const baseUrl = wx.getStorageSync('baseUrl')
+    // 如果没有的话，把目前设置的__BASE_URL__存到本地
+    if (!baseUrl) {
+      wx.removeStorageSync('token')
+      wx.removeStorageSync('userId')
+      wx.removeStorageSync('username')
+      wx.setStorageSync('baseUrl', __BASE_URL__)
+      return false
+    }
+    // 如果有，但是和目前设置的__BASE_URL__不一致，那就说明切环境了，则清除token和userId，并把新的环境存到本地
+    if (baseUrl !== __BASE_URL__) {
+      wx.removeStorageSync('token')
+      wx.removeStorageSync('userId')
+      wx.removeStorageSync('username')
+      wx.setStorageSync('baseUrl', __BASE_URL__)
+    }
+  },
+  onShow() {
+    this.getNewVersion()
+  },
+
+  methods: {
+    getNewVersion() {
+      if (wx.canIUse('getUpdateManager')) {
+        const updateManager = wx.getUpdateManager()
+        updateManager.onCheckForUpdate(function (res) {
+          console.log('res是啥', res)
+          if (res.hasUpdate) { // 请求完新版本信息的回调
+            updateManager.onUpdateReady(function () {
+              wx.showModal({
+                title: '更新提示',
+                content: '新版本已经准备好，是否重启应用？',
+                success: function (res) {
+                  if (res.confirm) { // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                    updateManager.applyUpdate()
+                  }
+                }
+              })
+            })
+            updateManager.onUpdateFailed(function () {
+              wx.showModal({ // 新的版本下载失败
+                title: '已经有新版本了哟~',
+                content: '新版本已经上线啦~，请您删除当前小程序，重新搜索进入哟~'
+              })
+            })
+          }
+        })
+      } else {
+        wx.showModal({ // 如果希望用户在最新版本的客户端上体验您的小程序，可以这样子提示
+          title: '提示',
+          content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+        })
+      }
+    }
+  }
+})
+</script>
+<config>
+{
+  pages: [
+    'pages/index/index',
+    'pages/web-view/web-view'
+  ],
+  window: {
+    backgroundTextStyle: 'light',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTitleText: '咏柳小程序脚手架',
+    navigationBarTextStyle: 'black'
+  },
+  "usingComponents": {
+    "van-icon": "./components/vant/icon/index",
+    "van-uploader": "./components/vant/uploader/index",
+    "van-popup": "./components/vant/popup/index",
+    "van-picker": "./components/vant/picker/index",
+    "van-toast": "./components/vant/toast/index",
+    "van-radio-group": "./components/vant/radio-group/index",
+    "van-radio": "./components/vant/radio/index",
+    "van-nav-bar": "./components/vant/nav-bar/index",
+    "van-loading": "./components/vant/loading/index",
+    "nodata": "./components/nodata/index",
+  },
+  "tabBar": {
+    "color": "#666666",
+    "borderStyle": "black",
+    "selectedColor": "#37b0ac",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "/static/bar/bar-index.png",
+        "selectedIconPath": "/static/bar/bar-index-active.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "/static/bar/bar-my.png",
+        "selectedIconPath": "/static/bar/bar-my-active.png",
+        "text": "我的"
+      }
+    ]
+  }
+}
+</config>

@@ -1,0 +1,31 @@
+{
+  "name": "@cmvalue/wepy-cli",
+  "version": "1.0.0",
+  "description": "咏柳科技小程序脚手架",
+  "main": "index.js",
+  "bin": {
+    "cmvalue-wepy": "bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "child_process": "^1.0.2",
+    "commander": "^6.1.0",
+    "download-git-repo": "^3.0.2",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.3.3",
+    "mem-fs": "^1.2.0",
+    "mem-fs-editor": "^7.0.1",
+    "ora": "^5.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-standard": "^4.0.1"
+  }
+}
